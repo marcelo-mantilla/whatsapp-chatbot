@@ -1,26 +1,29 @@
 from langchain.chat_models import ChatOpenAI
-from langchain.chains.conversation import base
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    SystemMessagePromptTemplate,
-    AIMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
 from langchain.schema import (
     AIMessage,
     HumanMessage,
     SystemMessage
 )
 
-def orchestrate_response(text:str, name:str) -> str:
-    chat = ChatOpenAI(temperature=0.5)
-    system_message = f"""
-        Hello, I'm a bot. I'm here to help you learn English.
+import os
+
+
+def orchestrate_response(text: str, name: str):
+    os.environ['OPENAI_API_KEY'] = os.getenv('OPENAI_API_KEY')
+
+    chat = ChatOpenAI(temperature=0.8, model_name='gpt-3.5-turbo', max_tokens=500)
+    prompt = f"""
+        The name of the person you are interacting with is called {name}. 
+        You can ask them questions about themselves.
     """
     messages = [
-        SystemMessage(content=system_message),
-        HumanMessage(content=text)
+        SystemMessage(content=prompt),
+        *compose_message_history(),
+        HumanMessage(content=text),
     ]
     ai_message = chat(messages)
-
     return ai_message
+
+
+def compose_message_history() -> list[str]:
+    return []
