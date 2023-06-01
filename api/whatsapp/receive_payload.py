@@ -22,7 +22,7 @@ https://developers.facebook.com/docs/whatsapp/cloud-api/guides/set-up-webhooks
 """
 
 
-def process_entries(entries):
+def process_entries(entries) -> dict:
     processed_entries = []
 
     for entry in entries:
@@ -38,7 +38,10 @@ def process_entries(entries):
                 'messages': messages,
             })
 
-    return processed_entries
+    if len(processed_entries) > 1:
+        print(f'MULTIPLE ENTRIES RECEIVED: {processed_entries}')
+
+    return processed_entries[0]
 
 
 def get_contacts(contacts: list):
