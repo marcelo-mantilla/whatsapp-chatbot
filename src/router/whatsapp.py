@@ -11,7 +11,6 @@ from src.services.user.get_or_create import get_or_create_user
 from src.services.chat.initialize import get_or_initialize_chat
 from src.services.openai.orchestrate import orchestrate_response
 from src.services.chat.create import create_message
-from models import ChatModel
 
 whatsapp = Blueprint('whatsapp', __name__, url_prefix='/whatsapp')
 
