@@ -11,7 +11,7 @@ class UserModel(db.Model):
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True)
     name = db.Column(db.String(80), unique=False, nullable=True)
     phone_number = db.Column(db.String(20), unique=True, nullable=False)
-    chats = db.relationship('ChatModel', back_populates='user', lazy='dynamic')
+    messages = db.relationship('MessageModel', back_populates='user', lazy='dynamic')
     created_at = db.Column(db.DateTime, unique=False, nullable=False, default=datetime.utcnow)
 
     @property
@@ -20,6 +20,5 @@ class UserModel(db.Model):
             'id': self.id,
             'name': self.name,
             'phone_number': self.phone_number,
-            'category': self.category,
             'created_at': self.created_at
         }

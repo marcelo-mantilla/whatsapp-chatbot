@@ -6,7 +6,7 @@ from models.user import UserModel
 
 from db import db
 
-users = Blueprint('user', __name__, url_prefix='/user')
+users = Blueprint('user', __name__, url_prefix='/users')
 
 
 @users.route('/<string:user_id>', methods=['GET'])

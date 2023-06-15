@@ -4,41 +4,29 @@ from langchain.schema import (
     HumanMessage,
     SystemMessage
 )
-
-from src.services.chat.create import create_message
-from models import UserModel
-from models import ChatModel
-
+from models import MessageModel
 import os
 
 
-def orchestrate_response(user: UserModel, chat: list[ChatModel]):
+def orchestrate_response(chat: list[MessageModel]) -> str:
     os.environ['OPENAI_API_KEY'] = os.getenv('OPENAI_API_KEY')
-    chat_openai = ChatOpenAI(temperature=0.8, model_name='gpt-3.5-turbo', max_tokens=500)
-
     chat.sort(key=lambda x: x.created_at)
     langchain_history = compose_langchain_history(chat)
 
-    print('LANGCHAIN HISTORY', langchain_history)
+    chat_openai = ChatOpenAI(temperature=0.8, model_name='gpt-3.5-turbo', max_tokens=500)
+    response = chat_openai.predict_messages(langchain_history)
 
-    # langchain ...
+    ### Google Calendar
+    # - How do I orchestrate this?
 
-    # gpt_response = {'message': '...'}
-    # gpt_message = create_message(
-    #     user=user,
-    #     message=gpt_response['message'],
-    #     category='TEXT',
-    #     origin='LLM',
-    # )
-    # chat.append(gpt_message)
-    # return gpt_message
+    return response.content
 
 
-def compose_langchain_history(chat: list[ChatModel]):
+def compose_langchain_history(chat: list[MessageModel]):
     history = []
     for message in chat:
-        match message.category:
-            case 'TEXT':
+        match message.origin:
+            case 'USER':
                 history.append(HumanMessage(content=message.message))
             case 'LLM':
                 history.append(AIMessage(content=message.message))

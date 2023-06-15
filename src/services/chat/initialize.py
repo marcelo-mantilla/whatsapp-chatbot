@@ -1,24 +1,23 @@
 from src.helpers.prompts import system_prompt
-from models.chat import ChatModel
+from models.message import MessageModel
 from models.user import UserModel
 from db import db
 
 
 def get_or_initialize_chat(user: UserModel):
-    chat = ChatModel.query.filter_by(user=user).all()
-    prompt = system_prompt(user.name)
+    chat = MessageModel.query.filter_by(user=user).all()
 
     if len(chat) > 0:
         return chat
 
-    chat = ChatModel(
+    message = MessageModel(
         user=user,
         origin='SYSTEM',
         category='TEXT',
-        message=prompt,
+        message=system_prompt(user.name),
     )
 
-    db.session.add(chat)
+    db.session.add(message)
     db.session.commit()
 
-    return chat
+    return [message]

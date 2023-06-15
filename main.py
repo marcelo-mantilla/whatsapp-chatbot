@@ -9,18 +9,19 @@ from db import db
 import os
 
 
-def create_app():
-    app = Flask(__name__)
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    db.init_app(app)
-    Migrate(app, db)
+db.init_app(app)
+Migrate(app, db)
 
-    app.register_blueprint(status)
-    app.register_blueprint(users)
-    app.register_blueprint(whatsapp)
+app.register_blueprint(status)
+app.register_blueprint(users)
+app.register_blueprint(whatsapp)
 
-    return app
+port = os.getenv('PORT', 8000)
 
-create_app().run(port=5000)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=port)
