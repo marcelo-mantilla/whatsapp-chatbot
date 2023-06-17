@@ -1,12 +1,9 @@
-import json
 import os
-import requests
 
 from flask import request, Blueprint
 
 from src.services.whatsapp.request import create_whatsapp_request
 from src.services.whatsapp.webhook_payload import process_whatsapp_entry
-from src.services.whatsapp.templates import introduction
 from src.services.user.get_or_create import get_or_create_user
 from src.services.chat.initialize import get_or_initialize_chat
 from src.services.openai.orchestrate import orchestrate_response
@@ -17,6 +14,7 @@ whatsapp = Blueprint('whatsapp', __name__, url_prefix='/whatsapp')
 
 @whatsapp.route('/webhooks', methods=['POST'], endpoint='receive_webhook')
 def receive_webhook():
+    # validate from facebook
     try:
         request_data = request.get_json()
         data = process_whatsapp_entry(request_data['entry'])
@@ -29,7 +27,6 @@ def receive_webhook():
             origin='USER',
             wa_created_at=data['messages'][0]['timestamp']
         )
-
         chat.append(message)
         openai_response: str = orchestrate_response(chat=chat)
         save_message(
@@ -39,12 +36,11 @@ def receive_webhook():
             origin='LLM',
         )
         create_whatsapp_request(user.phone_number, openai_response)
+        return 200
 
-        return '', 200
     except Exception as e:
-        print(e)
-    finally:
-        return 'ok'
+        print('Internal Server Error', e)
+        return 'Internal Server Error', 500
 
 
 # Verification
